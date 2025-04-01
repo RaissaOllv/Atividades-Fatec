@@ -1,0 +1,21 @@
+html { 
+    background-color: #ee89a; /* Define a cor de fundo da página como um tom de rosa */
+    display: flex; /* Usa Flexbox para organizar os elementos */
+    justify-content: center; /* Centraliza os elementos horizontalmente */
+    align-items: center; /* Centraliza os elementos verticalmente */
+    height: 100vh; /* Define a altura como 100% da viewport */
+    margin: 0; /* Remove margens padrão */
+    position: relative; /* Define posicionamento relativo para elementos filhos */
+    overflow: hidden; /* Esconde conteúdo que ultrapasse os limites da tela */
+}
+button {
+    position: absolute; /* Posiciona o botão absolutamente em relação ao elemento pai */
+    padding: 10px 20px; /* Adiciona preenchimento interno de 10px vertical e 20px horizontal */
+    font-size: 16px; /* Define o tamanho da fonte como 16 pixels */
+    cursor: pointer; /* Muda o cursor para indicar que é clicável */
+    border: none; /* Remove a borda padrão do botão */
+    background-color: #4d054d; /* Define a cor de fundo como um roxo escuro */
+    color: #e9e4ee; /* Define a cor do texto como um tom claro de roxo */
+    border-radius: 5px; /* Arredonda os cantos do botão com raio de 5px */
+    transition: transform 0.2s ease-in-out; /* Adiciona uma transição suave de 0.2s para transformações */
+}
