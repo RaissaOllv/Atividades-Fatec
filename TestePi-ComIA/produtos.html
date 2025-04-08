@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Produtos Cadastrados</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <style>
+        :root {
+            --primary: #2e7d32;
+            --primary-dark: #1b5e20;
+            --white: #ffffff;
+            --black: #212121;
+            --gray: #f5f5f5;
+            --error: #d32f2f;
+            --border-radius: 8px;
+            --box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Arial, sans-serif;
+        }
+
+        body {
+            background-color: var(--gray);
+            color: var(--black);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .container {
+            flex: 1;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem 1rem;
+            width: 100%;
+        }
+
+        header {
+            background-color: var(--primary);
+            color: var(--white);
+            padding: 2rem 0;
+            text-align: center;
+            box-shadow: var(--box-shadow);
+            margin-bottom: 2rem;
+        }
+
+        h1 {
+            font-size: 2.2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .products-container {
+            background-color: var(--white);
+            padding: 2rem;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+        }
+
+        .product-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-top: 1.5rem;
+        }
+
+        .product-card {
+            border: 1px solid #e0e0e0;
+            border-radius: var(--border-radius);
+            padding: 1.5rem;
+            transition: var(--transition);
+            background-color: var(--white);
+        }
+
+        .product-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--box-shadow);
+        }
+
+        .product-header {
+            border-bottom: 1px solid #eee;
+            padding-bottom: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .product-title {
+            font-size: 1.3rem;
+            color: var(--primary-dark);
+            margin-bottom: 0.5rem;
+        }
+
+        .product-category {
+            display: inline-block;
+            background-color: #e8f5e9;
+            color: var(--primary-dark);
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .product-details {
+            margin-bottom: 1rem;
+        }
+
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+        }
+
+        .detail-label {
+            font-weight: 600;
+            color: #666;
+        }
+
+        .product-price {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .product-actions {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        .action-btn {
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            transition: var(--transition);
+            font-size: 0.9rem;
+        }
+
+        .edit-btn {
+            background-color: #ffc107;
+            color: var(--black);
+        }
+
+        .delete-btn {
+            background-color: var(--error);
+            color: var(--white);
+        }
+
+        .nav-buttons {
+            display: flex;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        .nav-btn {
+            flex: 1;
+            text-align: center;
+            padding: 0.8rem;
+            background-color: var(--primary);
+            border-radius: var(--border-radius);
+            text-decoration: none;
+            color: var(--white);
+            font-weight: 600;
+        }
+
+        .empty-message {
+            text-align: center;
+            padding: 2rem;
+            color: #666;
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 1.8rem;
+            }
+            
+            .container {
+                padding: 1rem;
+            }
+            
+            .product-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>Produtos Cadastrados</h1>
+        </div>
+    </header>
+    
+    <main class="container">
+        <div class="products-container">
+            <div id="productsGrid" class="product-grid">
+                <!-- Produtos serão inseridos aqui via JavaScript -->
+            </div>
+            
+            <div class="nav-buttons">
+                <a href="cadastro.html" class="nav-btn">
+                    <i class="fas fa-plus-circle"></i> Cadastrar Novo
+                </a>
+                <a href="controle.html" class="nav-btn">
+                    <i class="fas fa-boxes"></i> Controle de Estoque
+                </a>
+            </div>
+        </div>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const productsGrid = document.getElementById('productsGrid');
+            
+            // Carrega produtos do localStorage
+            function carregarProdutos() {
+                const produtos = JSON.parse(localStorage.getItem('produtos') || '[]');
+                productsGrid.innerHTML = '';
+                
+                if (produtos.length === 0) {
+                    productsGrid.innerHTML = `
+                        <div class="empty-message">
+                            <i class="fas fa-box-open" style="font-size: 3rem; margin-bottom: 1rem;"></i>
+                            <h3>Nenhum produto cadastrado</h3>
+                            <p>Cadastre seu primeiro produto para começar</p>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                produtos.forEach(produto => {
+                    const card = document.createElement('div');
+                    card.className = 'product-card';
+                    card.innerHTML = `
+                        <div class="product-header">
+                            <h3 class="product-title">${produto.nome}</h3>
+                            ${produto.categoria ? `<span class="product-category">${formatCategoria(produto.categoria)}</span>` : ''}
+                        </div>
+                        <div class="product-details">
+                            <div class="detail-row">
+                                <span class="detail-label">Preço:</span>
+                                <span class="product-price">R$ ${produto.preco ? produto.preco.toFixed(2).replace('.', ',') : '0,00'}</span>
+                            </div>
+                            <div class="detail-row">
+                                <span class="detail-label">Quantidade:</span>
+                                <span>${produto.quantidade || 0}</span>
+                            </div>
+                            <div class="detail-row">
+                                <span class="detail-label">Validade:</span>
+                                <span>${produto.validade ? formatDate(new Date(produto.validade)) : 'Não informada'}</span>
+                            </div>
+                        </div>
+                        ${produto.descricao ? `<p style="margin-top: 1rem; color: #555;">${produto.descricao}</p>` : ''}
+                        <div class="product-actions">
+                            <button class="action-btn edit-btn" data-id="${produto.id}">
+                                <i class="fas fa-edit"></i> Editar
+                            </button>
+                            <button class="action-btn delete-btn" data-id="${produto.id}">
+                                <i class="fas fa-trash"></i> Excluir
+                            </button>
+                        </div>
+                    `;
+                    productsGrid.appendChild(card);
+                });
+                
+                // Adiciona eventos aos botões de edição
+                document.querySelectorAll('.edit-btn').forEach(btn => {
+                    btn.addEventListener('click', function() {
+                        const id = parseInt(this.getAttribute('data-id'));
+                        editarProduto(id);
+                    });
+                });
+                
+                // Adiciona eventos aos botões de exclusão
+                document.querySelectorAll('.delete-btn').forEach(btn => {
+                    btn.addEventListener('click', function() {
+                        const id = parseInt(this.getAttribute('data-id'));
+                        excluirProduto(id);
+                    });
+                });
+            }
+            
+            // Formata a data para exibição
+            function formatDate(date) {
+                const day = date.getDate().toString().padStart(2, '0');
+                const month = (date.getMonth() + 1).toString().padStart(2, '0');
+                const year = date.getFullYear();
+                return `${day}/${month}/${year}`;
+            }
+            
+            // Formata a categoria para exibição
+            function formatCategoria(categoria) {
+                const categorias = {
+                    'alimentos': 'Alimentos',
+                    'bebidas': 'Bebidas',
+                    'limpeza': 'Limpeza',
+                    'outros': 'Outros'
+                };
+                return categorias[categoria] || categoria;
+            }
+            
+            // Editar produto
+            function editarProduto(id) {
+                let produtos = JSON.parse(localStorage.getItem('produtos') || '[]');
+                const produto = produtos.find(p => p.id === id);
+                
+                if (!produto) return;
+                
+                Swal.fire({
+                    title: 'Editar Produto',
+                    html: `
+                        <div style="text-align: left; margin: 1rem 0;">
+                            <div class="form-group">
+                                <label for="editNome">Nome</label>
+                                <input id="editNome" class="swal2-input" value="${produto.nome}" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="editPreco">Preço (R$)</label>
+                                <input type="number" id="editPreco" class="swal2-input" 
+                                       value="${produto.preco || 0}" step="0.01" min="0" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="editQuantidade">Quantidade</label>
+                                <input type="number" id="editQuantidade" class="swal2-input" 
+                                       value="${produto.quantidade || 0}" min="0" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="editValidade">Validade</label>
+                                <input type="date" id="editValidade" class="swal2-input" 
+                                       value="${produto.validade || ''}" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="editCategoria">Categoria</label>
+                                <select id="editCategoria" class="swal2-input">
+                                    <option value="">Selecione...</option>
+                                    <option value="alimentos" ${produto.categoria === 'alimentos' ? 'selected' : ''}>Alimentos</option>
+                                    <option value="bebidas" ${produto.categoria === 'bebidas' ? 'selected' : ''}>Bebidas</option>
+                                    <option value="limpeza" ${produto.categoria === 'limpeza' ? 'selected' : ''}>Limpeza</option>
+                                    <option value="outros" ${produto.categoria === 'outros' ? 'selected' : ''}>Outros</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="editDescricao">Descrição</label>
+                                <textarea id="editDescricao" class="swal2-input" style="height: 100px;">${produto.descricao || ''}</textarea>
+                            </div>
+                        </div>
+                    `,
+                    showCancelButton: true,
+                    confirmButtonText: 'Salvar',
+                    cancelButtonText: 'Cancelar',
+                    confirmButtonColor: '#2e7d32',
+                    cancelButtonColor: '#d33',
+                    focusConfirm: false,
+                    preConfirm: () => {
+                        return {
+                            nome: document.getElementById('editNome').value.trim(),
+                            preco: parseFloat(document.getElementById('editPreco').value),
+                            quantidade: parseInt(document.getElementById('editQuantidade').value),
+                            validade: document.getElementById('editValidade').value,
+                            categoria: document.getElementById('editCategoria').value,
+                            descricao: document.getElementById('editDescricao').value.trim()
+                        };
+                    }
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        const { nome, preco, quantidade, validade, categoria, descricao } = result.value;
+                        
+                        if (!nome || isNaN(preco) || isNaN(quantidade) || !validade) {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Erro',
+                                text: 'Preencha todos os campos obrigatórios corretamente',
+                                confirmButtonColor: '#2e7d32'
+                            });
+                            return;
+                        }
+                        
+                        // Atualiza o produto
+                        produto.nome = nome;
+                        produto.preco = preco;
+                        produto.quantidade = quantidade;
+                        produto.validade = validade;
+                        produto.categoria = categoria;
+                        produto.descricao = descricao;
+                        
+                        localStorage.setItem('produtos', JSON.stringify(produtos));
+                        
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Atualizado!',
+                            text: 'Produto atualizado com sucesso',
+                            confirmButtonColor: '#2e7d32'
+                        }).then(() => {
+                            carregarProdutos();
+                        });
+                    }
+                });
+            }
+            
+            // Excluir produto
+            function excluirProduto(id) {
+                Swal.fire({
+                    title: 'Confirmar exclusão',
+                    text: 'Tem certeza que deseja excluir este produto?',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#2e7d32',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Sim, excluir',
+                    cancelButtonText: 'Cancelar'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        let produtos = JSON.parse(localStorage.getItem('produtos') || '[]');
+                        produtos = produtos.filter(p => p.id !== id);
+                        localStorage.setItem('produtos', JSON.stringify(produtos));
+                        
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Excluído!',
+                            text: 'Produto removido com sucesso',
+                            confirmButtonColor: '#2e7d32'
+                        }).then(() => {
+                            carregarProdutos();
+                        });
+                    }
+                });
+            }
+            
+            // Inicializa a página
+            carregarProdutos();
+        });
+    </script>
+</body>
+</html>
