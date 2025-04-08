@@ -1,0 +1,80 @@
+body {
+    margin: 0;
+    padding: 0;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: linear-gradient(135deg, #2c3e50, #e74c3c);
+    font-family: 'Comic Sans MS', cursive, sans-serif;
+    overflow: hidden;
+}
+
+/* Animação de shake */
+.shake {
+    animation: shake 0.5s cubic-bezier(.36,.07,.19,.97) both;
+    transform: translate3d(0, 0, 0);
+    backface-visibility: hidden;
+    perspective: 1000px;
+}
+
+@keyframes shake {
+    0%, 100% { transform: translate3d(0, 0, 0); }
+    10%, 30%, 50%, 70%, 90% { transform: translate3d(-5px, 0, 0); }
+    20%, 40%, 60%, 80% { transform: translate3d(5px, 0, 0); }
+}
+
+#game-container {
+    text-align: center;
+    position: relative;
+}
+
+h1 {
+    color: #fff;
+    text-shadow: 3px 3px 0 #c0392b;
+    font-size: 2.5em;
+    margin-bottom: 30px;
+    animation: bounce 1s infinite;
+}
+
+@keyframes bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+}
+
+#galinha {
+    width: 150px;
+    height: 150px;
+    position: absolute;
+    cursor: pointer;
+    transition: transform 0.2s;
+    user-select: none;
+    filter: drop-shadow(3px 3px 5px rgba(0,0,0,0.5));
+}
+
+#galinha:hover {
+    transform: scale(1.1) rotate(5deg);
+}
+
+.pena {
+    position: absolute;
+    font-size: 24px;
+    z-index: 1000;
+    animation: voar 3s linear forwards;
+    filter: drop-shadow(2px 2px 3px rgba(0,0,0,0.3));
+}
+
+@keyframes voar {
+    0% {
+        transform: translate(0, 0) rotate(0deg);
+        opacity: 1;
+    }
+    50% {
+        transform: translate(var(--x), calc(var(--y) * 0.5)) rotate(360deg);
+        opacity: 0.8;
+    }
+    100% {
+        transform: translate(var(--x), var(--y)) rotate(720deg);
+        opacity: 0;
+    }
+}
