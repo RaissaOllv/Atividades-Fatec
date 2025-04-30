@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="pt-br">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -17,7 +18,18 @@
         }
 
         let produtos = [];
-        
+
+        function getProximoId() {
+      if (produtos.length > 0) {
+        //pega o ultimo produto do vetor
+        let ultimoProduto = produtos[produtos.length - 1]
+        //pega o id do ultimo produto do vetor
+        let MaxId = ultimoProduto.id
+        return MaxId + 1
+      } else {
+        return 1 //se não tiver nenhum produto, retorna 1, o primeiro ID
+      }
+    }
         function salvar() {
             let nome = document.getElementById("nome").value.trim()
             let precoInput = document.getElementById("preco").value.trim()
@@ -38,7 +50,7 @@
 
             // Converte para número (aceitando tanto . quanto , como separador decimal)
             let preco = parseFloat(precoInput.replace(',', '.'))
-            
+
             if (preco <= 0) {
                 document.getElementById("erro-preco").textContent = "O preço deve ser maior que zero"
                 document.getElementById("erro-preco").classList.remove("hidden")
@@ -49,8 +61,9 @@
             let precoFormatado = preco.toFixed(2)
 
             let novoProduto = {
+                "id": proximoId,
                 "nome": nome,
-                "preco": precoFormatado,
+                "preco": preco,
                 "descricao": descricao
             }
 
@@ -58,14 +71,36 @@
             console.log(produtos)
 
             document.getElementById("mensagem").classList.remove("hidden")
-            setTimeout(function(){
+            setTimeout(function () {
                 document.getElementById("mensagem").classList.add("hidden")
             }, 1000)
             limparForm()
             carregarProdutos()
             return false
         }
-
+        //busca binária ou busca linear*
+        function excluir(id) {
+            // busca o produto no vetor para excluir
+            for (let contador = 0; contador <= produtos.length - 1; contador++) {
+                let produto = produtos[contador]
+                if (produto.id == id) { // se encontrou o produto buscado
+                    produtos.splice(contador, 1) // remove o produto
+                    break
+                }
+            }
+            carregarProdutos()
+        }
+        function alterar(id) {
+            // busca o produto no vetor para alterar o form
+            for (let contador = 0; contador <= produtos.length - 1; contador++) {
+                let produto = produtos[contador]
+                if (produto.id == id) { // se encontrou o produto buscado
+                    document.getElementById("nome").value = produto.nome
+                    document.getElementById("preco").value = produto.preco
+                    document.getElementById("descricao").value = produto.descricao
+                }
+            }
+        }
         function carregarProdutos() {
             let tbody = document.querySelector("tbody")
             tbody.innerHTML = "";
@@ -98,6 +133,7 @@
         }
     </script>
 </head>
+
 <body class="bg-white">
     <div class="container mx-auto p-6 max-w-6xl">
         <a href="index.html" class="inline-block mb-8 text-veneno-green hover:text-green-800 font-bold">
@@ -124,30 +160,31 @@
         </div>
 
         <!-- Formulário -->
-        <form id="form-cadastro" onsubmit="return salvar()" class="bg-white p-8 rounded-lg border-2 border-black shadow-lg">
+        <form id="form-cadastro" onsubmit="return salvar()"
+            class="bg-white p-8 rounded-lg border-2 border-black shadow-lg">
             <div class="mb-6">
                 <label for="nome" class="block text-black mb-2 font-bold">Nome do Produto</label>
-                <input type="text" id="nome" class="w-full px-4 py-3 border-2 border-black rounded-lg focus:ring-2 focus:ring-veneno-green focus:outline-none">
+                <input type="text" id="nome"
+                    class="w-full px-4 py-3 border-2 border-black rounded-lg focus:ring-2 focus:ring-veneno-green focus:outline-none">
                 <div id="erro-nome" class="hidden text-red-600 mt-2 font-medium">Preencha o nome do produto</div>
             </div>
 
             <div class="mb-6">
                 <label for="preco" class="block text-black mb-2 font-bold">Preço</label>
-                <input 
-                    type="text" 
-                    id="preco" 
+                <input type="text" id="preco"
                     class="w-full px-4 py-3 border-2 border-black rounded-lg focus:ring-2 focus:ring-veneno-green focus:outline-none"
-                    oninput="this.value = this.value.replace(/[^0-9,.]/g, '').replace(/(\..*)\./g, '$1')"
-                >
+                    oninput="this.value = this.value.replace(/[^0-9,.]/g, '').replace(/(\..*)\./g, '$1')">
                 <div id="erro-preco" class="hidden text-red-600 mt-2 font-medium">Insira um valor numérico válido</div>
             </div>
 
             <div class="mb-8">
                 <label for="descricao" class="block text-black mb-2 font-bold">Descrição (opcional)</label>
-                <textarea id="descricao" rows="4" class="w-full px-4 py-3 border-2 border-black rounded-lg focus:ring-2 focus:ring-veneno-green focus:outline-none"></textarea>
+                <textarea id="descricao" rows="4"
+                    class="w-full px-4 py-3 border-2 border-black rounded-lg focus:ring-2 focus:ring-veneno-green focus:outline-none"></textarea>
             </div>
 
-            <button type="submit" class="w-full bg-veneno-green hover:bg-green-800 text-white font-bold py-3 px-4 rounded-lg border-2 border-black shadow-md transition-colors">
+            <button type="submit"
+                class="w-full bg-veneno-green hover:bg-green-800 text-white font-bold py-3 px-4 rounded-lg border-2 border-black shadow-md transition-colors">
                 Salvar Produto
             </button>
         </form>
@@ -161,4 +198,5 @@
         </div>
     </div>
 </body>
+
 </html>

@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mercadinho Esquina - Cadastrar produtos</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+  <script>
+    let produtos = [] //colchete = lista de produtos
+    let idAlterado = null //guarda o id do produto q esta sendo alterado
+    function getProximoId() {
+      if (produtos.length > 0) {
+        //pega o ultimo produto do vetor
+        let ultimoProduto = produtos[produtos.length - 1]
+        //pega o id do ultimo produto do vetor
+        let MaxId = ultimoProduto.id
+        return MaxId + 1
+      } else {
+        return 1 //se não tiver nenhum produto, retorna 1, o primeiro ID
+      }
+    }
+    function salvar() { 
+      let nome = document.getElementById("nome").value.trim()
+      let preco = document.getElementById("preco").value.trim()
+      let descricao = document.getElementById("descricao").value.trim()
+
+      if (nome == "" || nome.length < 3) {
+        document.getElementById("erro-nome").style.display = "block"
+        return false
+      }
+      if (preco == "" || preco <= 0) {
+        document.getElementById("erro-preco").style.display = "block"
+        return false
+      }
+      // se nao tem idAlterado então não é novo produto
+      if (idAlterado == null) {
+      let proximoId = getProximoId() //parenteses = função
+
+      let novoProduto = {
+        "id": proximoId,
+        "nome": nome,
+        "preco": preco,
+        "descricao": descricao
+      }
+
+      produtos.push(novoProduto)
+      console.log(produtos)
+    }
+    else{ //tem um produto sendo alterado
+      //busca o produto no vetor para alterar
+      for (let contador = 0; contador <= produtos.length - 1; contador++) {
+        let produto = produtos[contador]
+        if (produto.id == idAlterado) { // se encontrou o produto buscado
+          produto.nome = nome
+          produto.preco = preco
+          produto.descricao = descricao
+          break
+          idAlterado == null //zera a variavel q esta sendo alterada
+        }
+      }
+    }
+      document.getElementById("mensagem").style.display = "flex"
+      setTimeout(function () {
+        document.getElementById("mensagem").style.display = "none"
+      }, 1000)
+      limparForm()
+
+      carregarProdutos()
+
+      return false; //bloqueia o onsubmit para não atualizar a pagina
+    }
+    //busca binária ou busca linear*
+    function excluir(id) {
+      // busca o produto no vetor para excluir
+      for (let contador = 0; contador <= produtos.length - 1; contador++) {
+        let produto = produtos[contador]
+        if (produto.id == id) { // se encontrou o produto buscado
+          produtos.splice(contador, 1) // remove o produto
+          break
+        }
+      }
+      carregarProdutos()
+    }
+    function alterar(id) {
+      // busca o produto no vetor para alterar o form
+      for (let contador = 0; contador <= produtos.length - 1; contador++) {
+        let produto = produtos[contador]
+        if (produto.id == id) { // se encontrou o produto buscado
+          document.getElementById("nome").value = produto.nome
+          document.getElementById("preco").value = produto.preco
+          document.getElementById("descricao").value = produto.descricao
+          idAlterado = produto.id //deefine q o produto sera alterado
+        }
+      }
+    }
+    function carregarProdutos() {
+      let tbody = document.getElementsByTagName("tbody")[0]
+      tbody.innerHTML = "" // Clear existing rows
+      for (let contador = 0; contador <= produtos.length - 1; contador++) {
+        let produto = produtos[contador]
+
+        let linha = document.createElement("tr")
+        linha.innerHTML = `
+          <td>${produto.nome}</td>
+          <td>R$ ${produto.preco}</td>
+          <td>${produto.descricao}</td>
+          <td>
+            <button class="btn btn-sm btn-warning"
+                    onclick="alterar(${produto.id})">
+              Alterar
+              </button>
+            <button class="btn btn-sm btn-danger" 
+                    onclick="excluir(${produto.id})">
+              Excluir
+              </button>
+          </td>
+        `
+
+        tbody.appendChild(linha)
+      }
+    }
+
+    function limparForm() {
+      document.getElementById("nome").value = ""
+      document.getElementById("preco").value = ""
+      document.getElementById("descricao").value = ""
+      document.getElementById("nome").focus()
+    }
+
+    function limparErro(id) {
+      document.getElementById(id).style.display = "none"
+    }
+  </script>
+</head>
+
+<body class="bg-light">
+  <div class="container mt-4">
+    <a href="index.html" class="btn btn-link">Voltar</a>
+    <h1 class="mb-4">Cadastro de Produtos</h1>
+
+    <div class="table-responsive">
+      <table class="table table-striped table-bordered">
+        <thead class="table-dark">
+          <tr>
+            <th>Nome</th>
+            <th>Preço</th>
+            <th>Descrição</th>
+            <th>Ações</th>
+          </tr>
+        </thead>
+        <tbody>
+        </tbody>
+      </table>
+    </div>
+
+    <form id="form-cadastro" class="mt-4" onsubmit="return salvar()">
+      <div class="mb-3">
+        <label for="nome" class="form-label">Nome do Produto</label>
+        <input type="text" class="form-control" name="nome" id="nome" maxlength="150"
+          onkeydown="limparErro('erro-nome')" />
+        <div class="invalid-feedback" id="erro-nome" style="display: none;">Preencha o nome do produto.</div>
+      </div>
+      <div class="mb-3">
+        <label for="preco" class="form-label">Preço</label>
+        <input type="number" class="form-control" name="preco" id="preco" step="0.1"
+          onkeydown="limparErro('erro-preco')" />
+        <div class="invalid-feedback" id="erro-preco" style="display: none;">Preencha o preço.</div>
+      </div>
+      <div class="mb-3">
+        <label for="descricao" class="form-label">Descrição (opcional)</label>
+        <textarea class="form-control" name="descricao" id="descricao" rows="5"></textarea>
+      </div>
+      <div class="mb-3">
+        <button type="submit" class="btn btn-primary">Salvar</button>
+      </div>
+    </form>
+
+    <div id="mensagem" class="alert alert-success position-fixed top-50 start-50 translate-middle"
+      style="display: none; z-index: 1000;">
+      Produto cadastrado com sucesso.
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
+    crossorigin="anonymous"></script>
+</body>
+
+</html>

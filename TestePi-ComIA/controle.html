@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="pt-br">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -69,7 +70,8 @@
             margin-bottom: 1.5rem;
         }
 
-        .estoque-table th, .estoque-table td {
+        .estoque-table th,
+        .estoque-table td {
             padding: 1rem;
             text-align: left;
             border-bottom: 1px solid #e0e0e0;
@@ -170,11 +172,11 @@
             h1 {
                 font-size: 1.8rem;
             }
-            
+
             .container {
                 padding: 1rem;
             }
-            
+
             .estoque-table {
                 display: block;
                 overflow-x: auto;
@@ -182,13 +184,14 @@
         }
     </style>
 </head>
+
 <body>
     <header>
         <div class="container">
             <h1>Controle de Estoque</h1>
         </div>
     </header>
-    
+
     <main class="container">
         <div class="estoque-container">
             <button id="showAddForm" class="action-btn add-btn">
@@ -231,7 +234,7 @@
                     <!-- Produtos serão inseridos aqui via JavaScript -->
                 </tbody>
             </table>
-            
+
             <div class="nav-buttons">
                 <a href="cadastro.html" class="nav-btn">
                     <i class="fas fa-arrow-left"></i> Voltar para Cadastro
@@ -242,18 +245,18 @@
 
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             const estoqueBody = document.getElementById('estoqueBody');
             const showAddForm = document.getElementById('showAddForm');
             const addForm = document.getElementById('addForm');
             const saveNew = document.getElementById('saveNew');
             const cancelAdd = document.getElementById('cancelAdd');
-            
+
             // Carrega produtos do localStorage
             function carregarProdutos() {
                 const produtos = JSON.parse(localStorage.getItem('produtos') || '[]');
                 estoqueBody.innerHTML = '';
-                
+
                 if (produtos.length === 0) {
                     estoqueBody.innerHTML = `
                         <tr>
@@ -262,7 +265,7 @@
                     `;
                     return;
                 }
-                
+
                 produtos.forEach(produto => {
                     const row = document.createElement('tr');
                     row.innerHTML = `
@@ -280,24 +283,24 @@
                     `;
                     estoqueBody.appendChild(row);
                 });
-                
+
                 // Adiciona eventos aos botões de edição
                 document.querySelectorAll('.edit-btn').forEach(btn => {
-                    btn.addEventListener('click', function() {
+                    btn.addEventListener('click', function () {
                         const id = parseInt(this.getAttribute('data-id'));
                         editarProduto(id);
                     });
                 });
-                
+
                 // Adiciona eventos aos botões de exclusão
                 document.querySelectorAll('.delete-btn').forEach(btn => {
-                    btn.addEventListener('click', function() {
+                    btn.addEventListener('click', function () {
                         const id = parseInt(this.getAttribute('data-id'));
                         excluirProduto(id);
                     });
                 });
             }
-            
+
             // Formata a data para exibição
             function formatDate(date) {
                 const day = date.getDate().toString().padStart(2, '0');
@@ -305,27 +308,27 @@
                 const year = date.getFullYear();
                 return `${day}/${month}/${year}`;
             }
-            
+
             // Mostra/oculta formulário de adição
-            showAddForm.addEventListener('click', function() {
+            showAddForm.addEventListener('click', function () {
                 addForm.style.display = 'block';
                 this.style.display = 'none';
             });
-            
-            cancelAdd.addEventListener('click', function() {
+
+            cancelAdd.addEventListener('click', function () {
                 addForm.style.display = 'none';
                 showAddForm.style.display = 'inline-block';
                 document.getElementById('newNome').value = '';
                 document.getElementById('newQuantidade').value = '0';
                 document.getElementById('newValidade').value = '';
             });
-            
+
             // Adiciona novo produto
-            saveNew.addEventListener('click', function() {
+            saveNew.addEventListener('click', function () {
                 const nome = document.getElementById('newNome').value.trim();
                 const quantidade = parseInt(document.getElementById('newQuantidade').value);
                 const validade = document.getElementById('newValidade').value;
-                
+
                 if (!nome || isNaN(quantidade) || !validade) {
                     Swal.fire({
                         icon: 'error',
@@ -335,7 +338,7 @@
                     });
                     return;
                 }
-                
+
                 // Adiciona ao localStorage
                 let produtos = JSON.parse(localStorage.getItem('produtos') || '[]');
                 const novoProduto = {
@@ -347,10 +350,10 @@
                     categoria: '', // Valor padrão
                     descricao: '' // Valor padrão
                 };
-                
+
                 produtos.push(novoProduto);
                 localStorage.setItem('produtos', JSON.stringify(produtos));
-                
+
                 Swal.fire({
                     icon: 'success',
                     title: 'Sucesso!',
@@ -365,14 +368,14 @@
                     carregarProdutos();
                 });
             });
-            
+
             // Editar produto
             function editarProduto(id) {
                 let produtos = JSON.parse(localStorage.getItem('produtos') || '[]');
                 const produto = produtos.find(p => p.id === id);
-                
+
                 if (!produto) return;
-                
+
                 Swal.fire({
                     title: 'Editar Produto',
                     html: `
@@ -409,7 +412,7 @@
                 }).then((result) => {
                     if (result.isConfirmed) {
                         const { nome, quantidade, validade } = result.value;
-                        
+
                         if (!nome || isNaN(quantidade) || !validade) {
                             Swal.fire({
                                 icon: 'error',
@@ -419,14 +422,14 @@
                             });
                             return;
                         }
-                        
+
                         // Atualiza o produto
                         produto.nome = nome;
                         produto.quantidade = quantidade;
                         produto.validade = validade;
-                        
+
                         localStorage.setItem('produtos', JSON.stringify(produtos));
-                        
+
                         Swal.fire({
                             icon: 'success',
                             title: 'Atualizado!',
@@ -438,7 +441,7 @@
                     }
                 });
             }
-            
+
             // Excluir produto
             function excluirProduto(id) {
                 Swal.fire({
@@ -455,7 +458,7 @@
                         let produtos = JSON.parse(localStorage.getItem('produtos') || '[]');
                         produtos = produtos.filter(p => p.id !== id);
                         localStorage.setItem('produtos', JSON.stringify(produtos));
-                        
+
                         Swal.fire({
                             icon: 'success',
                             title: 'Excluído!',
@@ -467,7 +470,7 @@
                     }
                 });
             }
-            
+
             // Inicializa a tabela
             carregarProdutos();
         });
@@ -476,4 +479,5 @@
         <i class="fas fa-list"></i> Ver Produtos
     </a>
 </body>
+
 </html>
