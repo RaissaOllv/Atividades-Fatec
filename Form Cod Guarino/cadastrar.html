@@ -132,6 +132,11 @@
     function limparErro(id) {
       document.getElementById(id).style.display = "none"
     }
+
+    function adicionar() {
+      limparForm()
+      idAlterado = null
+    }
   </script>
 </head>
 
@@ -174,6 +179,7 @@
       </div>
       <div class="mb-3">
         <button type="submit" class="btn btn-primary">Salvar</button>
+        <button class="btn btn-secondary" onclick="adicionar()">Adicionar</button>
       </div>
     </form>
 
